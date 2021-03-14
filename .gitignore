@@ -1,3 +1,5 @@
 pwd
 
 /blog/migrations/
+/mysite/mysite/__pycache__
+/mysite/blog/__pycache__
