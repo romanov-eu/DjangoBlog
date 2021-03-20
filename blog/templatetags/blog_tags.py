@@ -1,9 +1,8 @@
 from django import template
 from ..models import Post
 from django.db.models import Count
-
-""" from django.utils.safestring import mark_safe
-import markdown """
+from django.utils.safestring import mark_safe
+import markdown
 
 
 register = template.Library()
@@ -26,6 +25,6 @@ def show_latest_posts(count=5):
     return {'latest_posts': latest_posts}
 
 
-""" @register.filter(name='markdown')
+@register.filter(name='markdown')
 def markdown_format(text):
-    return mark_safe(markdown.markdown(text)) """
+    return mark_safe(markdown.markdown(text))
