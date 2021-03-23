@@ -1,9 +1,9 @@
-from django.db.models import Count
 from django.shortcuts import render, get_object_or_404 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
-from django.core.mail import send_mail # устранена проблема с SEND_MAIL
-from django.contrib.postgres.search import SearchVector
+from django.core.mail import send_mail
+from django.db.models import Count
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, TrigramSimilarity
 from taggit.models import Tag
 from .models import Post, Comment
 from .forms import EmailPostForm, CommentForm, SearchForm
@@ -110,9 +110,26 @@ def post_search(request):
         if form.is_valid():
             query = form.cleaned_data['query']
             results = Post.objects.annotate(
+                similarity=TrigramSimilarity('title', query),
+            ).filter(similarity__gt=0.3).order_by('-similarity')
+    return render(request,
+                  'blog/post/search.html',
+                  {'form': form,
+                   'query': query,
+                   'results': results})
+
+""" def post_search(request):
+    form = SearchForm()
+    query = None
+    results = []
+    if 'query' in request.GET:
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            results = Post.objects.annotate(
                 search=SearchVector('title', 'body'),).filter(search=query)
     return render(request,
                   'blog/post/search.html',
                   {'form': form,
                    'query': query,
-                   'results': results})                                 
+                   'results': results}) """                                 
